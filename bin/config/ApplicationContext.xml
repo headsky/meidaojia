@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+  	  http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  	  http://www.springframework.org/schema/context
+  	  http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  	  http://www.springframework.org/schema/tx
+  	  http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  	  http://www.springframework.org/schema/aop
+  	  http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
+  	  
+  	  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    	<property name="locations" value="classpath:config/jdbc.properties" />
+  	 </bean>
+
+
+<!--    <bean id="dataSource1" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+             <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+             <property name="url" value="jdbc:mysql://192.168.56.101/meidaojia"/>
+             <property name="username" value="meidaojia"/>
+             <property name="password" value="meidaojia"/>
+   </bean> -->
+   <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource"/>
+		<property name="jdbcUrl" value="jdbc:mysql://192.168.56.101/meidaojia?zeroDateTimeBehavior=convertToNull"/>
+		<property name="user" value="meidaojia"/>
+		<property name="password" value="meidaojia"/>
+	</bean>
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+  		<property name="dataSource" ref="dataSource" />
+  		<property name="mapperLocations" value="classpath*:mappers/**/*.xml" />
+	</bean>
+  
+  <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+  	<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+  
+  <!-- similarly, don't forget the PlatformTransactionManager -->
+    
+  
+  <!-- the transactional advice (what 'happens'; see the <aop:advisor/> bean below) -->
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <!-- the transactional semantics... -->
+        <tx:attributes>
+            <!-- all methods starting with 'get' are read-only -->
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="select*" read-only="true"/>
+            <tx:method name="insert*" propagation="REQUIRED" read-only="false" />
+            <!-- other methods use the default transaction settings (see below) -->
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+  
+  <!-- ensure that the above transactional advice runs for any execution
+        of an operation defined by the FooService interface -->
+    <aop:config>
+        <aop:pointcut id="pc" expression="execution(* com.hs.service..*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="pc"/>
+    </aop:config>
+    
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+    <import resource="BeanConfig.xml"/>
+       
+</beans>

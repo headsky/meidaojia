@@ -1,0 +1,37 @@
+apply plugin: 'eclipse'
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'com.hs.Main'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+dependencies {
+	compile 'org.springframework:spring-context:4.2.2.RELEASE',
+			'org.springframework:spring-tx:4.2.2.RELEASE',
+			'org.springframework:spring-core:4.2.2.RELEASE',
+			'org.springframework:spring-beans:4.2.2.RELEASE',
+			'org.springframework:spring-aop:4.2.2.RELEASE',
+			'org.springframework:spring-expression:4.2.2.RELEASE',
+			'org.springframework:spring-jdbc:4.2.2.RELEASE',
+			'org.springframework:spring-aspects:4.2.2.RELEASE',
+			
+			'org.slf4j:slf4j-api:1.7.13',
+			'org.slf4j:slf4j-log4j12:1.7.13',
+			'log4j:log4j:1.2.17',
+			
+			'org.mybatis:mybatis:3.3.0',
+			'org.mybatis:mybatis-spring:1.2.3',
+			'com.mchange:c3p0:0.9.5.1',
+			'mysql:mysql-connector-java:5.1.37',
+			'commons-dbcp:commons-dbcp:1.4'
+			
+}
+
+jar {
+	baseName = 'meidaojia'
+	version =  '1.0.0'
+}
